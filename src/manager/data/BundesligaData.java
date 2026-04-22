@@ -513,7 +513,7 @@ public class BundesligaData {
 	}
 
 	private static Club createHSV() {
-		Club club = new Club("Hamburger HSV");
+		Club club = new Club("Hamburger SV");
 		club.addPlayer(new Player("Daniel Heuer Fernandes", "GK", 3, 82));
 		club.addPlayer(new Player("Daniel Peretz", "GK", 3, 79));
 		club.addPlayer(new Player("Hannes Hermann", "GK", 1, 69));

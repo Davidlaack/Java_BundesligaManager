@@ -160,9 +160,22 @@ public class Season {
 
     public void nextMatchday() {
         currentMatchday++;
-
-        if (currentMatchday >= matchdays.size()) {
-            System.out.println("Die Saison ist beendet.");
-        }
     }
+    
+    public boolean isSeasonFinished() {
+        return currentMatchday >= matchdays.size();
+    }
+    
+    public ArrayList<Club> getFinalTable() {
+        ArrayList<Club> table = new ArrayList<>(clubs);
+        table.sort((club1, club2) -> {
+            if (club2.getPoints() != club1.getPoints()) {
+                return club2.getPoints() - club1.getPoints();
+            }
+            return club2.getGoalDifference() - club1.getGoalDifference();
+        });
+        return table;
+    }
+
+
 }
