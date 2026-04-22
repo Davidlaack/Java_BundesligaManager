@@ -159,9 +159,9 @@ public class Season {
     }
 
     public void nextMatchday() {
-        if (currentMatchday < matchdays.size() - 1) {
-            currentMatchday++;
-        } else {
+        currentMatchday++;
+
+        if (currentMatchday >= matchdays.size()) {
             System.out.println("Die Saison ist beendet.");
         }
     }

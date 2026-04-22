@@ -8,6 +8,7 @@ import manager.model.Lineup;
 import manager.model.Player;
 import manager.season.Season;
 import manager.simulation.Match;
+import manager.simulation.MatchSimulator;
 
 public class Game {
 
@@ -23,9 +24,9 @@ public class Game {
     }
 
     public void start() {
-        System.out.println("==================================");
+        System.out.println("============================================");
         System.out.println("     Willkommen zum Bundesliga Manager");
-        System.out.println("==================================");
+        System.out.println("============================================");
 
         chooseClub();
         mainMenu();
@@ -70,6 +71,7 @@ public class Game {
             System.out.println("5. Aktuellen Spieltag anzeigen");
             System.out.println("6. Startelf festlegen");
             System.out.println("7. Aktuelle Startelf anzeigen");
+            System.out.println("8. Nächsten Spieltag spielen");
             System.out.println("0. Spiel beenden");
             System.out.print("Auswahl: ");
 
@@ -108,6 +110,9 @@ public class Game {
                     break;
                 case 7:
                     showCurrentLineup();
+                    break;
+                case 8:
+                    playNextMatchday();
                     break;
                 case 0:
                     running = false;
@@ -248,5 +253,27 @@ public class Game {
 
     public Club getUserClub() {
         return userClub;
+        
+    }
+    
+    private void playNextMatchday() {
+        if (userClub.getCurrentLineup() == null) {
+            System.out.println("Du musst zuerst eine Startelf festlegen.");
+            return;
+        }
+
+        if (season.getCurrentMatchdayObject() == null) {
+            System.out.println("Es gibt keinen weiteren Spieltag mehr.");
+            return;
+        }
+
+        System.out.println("\n===== SPIELTAG " + season.getCurrentMatchdayObject().getNumber() + " =====");
+
+        for (Match match : season.getCurrentMatchdayObject().getMatches()) {
+            MatchSimulator.simulateMatch(match);
+            System.out.println(match);
+        }
+
+        season.nextMatchday();
     }
 }
