@@ -6,13 +6,15 @@ public class Club {
 
 	private String name;
 	private ArrayList<Player> squad;
-
+	
 	private int points;
 	private int goalsFor;
 	private int goalsAgainst;
 	private int wins;
 	private int draws;
 	private int losses;
+	
+	private Lineup currentLineup;
 
 	public Club(String name) {
 		this.name = name;
@@ -24,6 +26,7 @@ public class Club {
 		this.wins = 0;
 		this.draws = 0;
 		this.losses = 0;
+		this.currentLineup = null;
 	}
 
 	public String getName() {
@@ -96,6 +99,14 @@ public class Club {
 		System.out.println("Siege: " + wins);
 		System.out.println("Unentschieden: " + draws);
 		System.out.println("Niederlagen: " + losses);
+	}
+	
+	public Lineup getCurrentLineup() {
+	    return currentLineup;
+	}
+
+	public void setCurrentLineup(Lineup currentLineup) {
+	    this.currentLineup = currentLineup;
 	}
 
 	@Override

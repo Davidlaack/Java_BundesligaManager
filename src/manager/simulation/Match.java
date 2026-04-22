@@ -4,34 +4,51 @@ import manager.model.Club;
 
 public class Match {
 
-	private Club homeClub;
-	private Club awayClub;
-	private boolean played;
+    private Club homeClub;
+    private Club awayClub;
+    private int homeGoals;
+    private int awayGoals;
+    private boolean played;
 
-	public Match(Club homeClub, Club awayClub) {
-		this.homeClub = homeClub;
-		this.awayClub = awayClub;
-		this.played = false;
-	}
+    public Match(Club homeClub, Club awayClub) {
+        this.homeClub = homeClub;
+        this.awayClub = awayClub;
+        this.homeGoals = -1;
+        this.awayGoals = -1;
+        this.played = false;
+    }
 
-	public Club getHomeClub() {
-		return homeClub;
-	}
+    public Club getHomeClub() {
+        return homeClub;
+    }
 
-	public Club getAwayClub() {
-		return awayClub;
-	}
+    public Club getAwayClub() {
+        return awayClub;
+    }
 
-	public boolean isPlayed() {
-		return played;
-	}
+    public int getHomeGoals() {
+        return homeGoals;
+    }
 
-	public void setPlayed(boolean played) {
-		this.played = played;
-	}
+    public int getAwayGoals() {
+        return awayGoals;
+    }
 
-	@Override
-	public String toString() {
-		return homeClub.getName() + " vs. " + awayClub.getName();
-	}
+    public boolean isPlayed() {
+        return played;
+    }
+
+    public void setResult(int homeGoals, int awayGoals) {
+        this.homeGoals = homeGoals;
+        this.awayGoals = awayGoals;
+        this.played = true;
+    }
+
+    @Override
+    public String toString() {
+        if (played) {
+            return homeClub.getName() + " " + homeGoals + " : " + awayGoals + " " + awayClub.getName();
+        }
+        return homeClub.getName() + " vs. " + awayClub.getName();
+    }
 }

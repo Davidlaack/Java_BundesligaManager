@@ -7,74 +7,162 @@ import manager.simulation.Match;
 
 public class Season {
 
-	private ArrayList<Club> clubs;
-	private ArrayList<Matchday> matchdays;
-	private int currentMatchday;
+    private ArrayList<Club> clubs;
+    private ArrayList<Matchday> matchdays;
+    private int currentMatchday;
 
-	public Season() {
-		clubs = BundesligaData.createBundesligaClubs();
-		matchdays = new ArrayList<>();
-		currentMatchday = 0;
-		createTestSchedule();
-	}
+    public Season() {
+        clubs = BundesligaData.createBundesligaClubs();
+        matchdays = new ArrayList<>();
+        currentMatchday = 0;
+        createFullSchedule();
+    }
 
-	public ArrayList<Club> getClubs() {
-		return clubs;
-	}
+    public ArrayList<Club> getClubs() {
+        return clubs;
+    }
 
-	public ArrayList<Matchday> getMatchdays() {
-		return matchdays;
-	}
+    public ArrayList<Matchday> getMatchdays() {
+        return matchdays;
+    }
 
-	public int getCurrentMatchday() {
-		return currentMatchday;
-	}
+    public int getCurrentMatchday() {
+        return currentMatchday;
+    }
 
-	public void nextMatchday() {
-		if (currentMatchday < matchdays.size() - 1) {
-			currentMatchday++;
-		}
-	}
+    public Matchday getCurrentMatchdayObject() {
+        if (currentMatchday < matchdays.size()) {
+            return matchdays.get(currentMatchday);
+        }
+        return null;
+    }
 
-	public Matchday getCurrentMatchdayObject() {
-		return matchdays.get(currentMatchday);
-	}
+    public void showAllClubs() {
+        System.out.println("Bundesliga-Clubs:");
+        for (Club club : clubs) {
+            System.out.println("- " + club.getName());
+        }
+    }
 
-	public void showAllClubs() {
-		System.out.println("Bundesliga-Clubs:");
-		for (Club club : clubs) {
-			System.out.println("- " + club.getName());
-		}
-	}
+    private void createFullSchedule() {
+        ArrayList<Club> teams = new ArrayList<>(clubs);
+        int teamCount = teams.size();
 
-	private void createTestSchedule() {
-		Matchday matchday1 = new Matchday(1);
-		matchday1.addMatch(new Match(clubs.get(0), clubs.get(9)));
-		matchday1.addMatch(new Match(clubs.get(1), clubs.get(2)));
-		matchday1.addMatch(new Match(clubs.get(3), clubs.get(4)));
+        if (teamCount % 2 != 0) {
+            return;
+        }
 
-		Matchday matchday2 = new Matchday(2);
-		matchday2.addMatch(new Match(clubs.get(9), clubs.get(2)));
-		matchday2.addMatch(new Match(clubs.get(0), clubs.get(3)));
-		matchday2.addMatch(new Match(clubs.get(4), clubs.get(1)));
+        int rounds = teamCount - 1;
+        int matchesPerRound = teamCount / 2;
 
-		matchdays.add(matchday1);
-		matchdays.add(matchday2);
-	}
+        ArrayList<Club> rotatingTeams = new ArrayList<>(teams);
 
-	public Match getNextMatchForClub(Club club) {
-		if (currentMatchday >= matchdays.size()) {
-			return null;
-		}
+        for (int round = 0; round < rounds; round++) {
+            Matchday matchday = new Matchday(round + 1);
 
-		Matchday current = matchdays.get(currentMatchday);
+            for (int i = 0; i < matchesPerRound; i++) {
+                Club home = rotatingTeams.get(i);
+                Club away = rotatingTeams.get(teamCount - 1 - i);
 
-		for (Match match : current.getMatches()) {
-			if (match.getHomeClub().equals(club) || match.getAwayClub().equals(club)) {
-				return match;
-			}
-		}
+                if (round % 2 == 0) {
+                    matchday.addMatch(new Match(home, away));
+                } else {
+                    matchday.addMatch(new Match(away, home));
+                }
+            }
 
-		return null;
-	}
+            matchdays.add(matchday);
+
+            Club fixed = rotatingTeams.get(0);
+            Club last = rotatingTeams.remove(rotatingTeams.size() - 1);
+            rotatingTeams.add(1, last);
+            rotatingTeams.set(0, fixed);
+        }
+
+        for (int round = 0; round < rounds; round++) {
+            Matchday firstHalf = matchdays.get(round);
+            Matchday secondHalf = new Matchday(round + 1 + rounds);
+
+            for (Match match : firstHalf.getMatches()) {
+                secondHalf.addMatch(new Match(match.getAwayClub(), match.getHomeClub()));
+            }
+
+            matchdays.add(secondHalf);
+        }
+    }
+
+    public Club findClubByName(String name) {
+        for (Club club : clubs) {
+            if (club.getName().equals(name)) {
+                return club;
+            }
+        }
+        return null;
+    }
+
+    public Match getNextMatchForClub(Club club) {
+        if (currentMatchday >= matchdays.size()) {
+            return null;
+        }
+
+        Matchday matchday = matchdays.get(currentMatchday);
+
+        for (Match match : matchday.getMatches()) {
+            if (match.getHomeClub().equals(club) || match.getAwayClub().equals(club)) {
+                return match;
+            }
+        }
+
+        return null;
+    }
+
+    public void showTable() {
+        ArrayList<Club> table = new ArrayList<>(clubs);
+
+        table.sort((club1, club2) -> {
+            if (club2.getPoints() != club1.getPoints()) {
+                return club2.getPoints() - club1.getPoints();
+            }
+            return club2.getGoalDifference() - club1.getGoalDifference();
+        });
+
+        System.out.println("\n===== TABELLE =====");
+        for (int i = 0; i < table.size(); i++) {
+            Club club = table.get(i);
+            System.out.println(
+                (i + 1) + ". " +
+                club.getName() +
+                " | Punkte: " + club.getPoints() +
+                " | Tore: " + club.getGoalsFor() + ":" + club.getGoalsAgainst() +
+                " | Diff: " + club.getGoalDifference()
+            );
+        }
+    }
+
+    public int getTablePosition(Club userClub) {
+        ArrayList<Club> table = new ArrayList<>(clubs);
+
+        table.sort((club1, club2) -> {
+            if (club2.getPoints() != club1.getPoints()) {
+                return club2.getPoints() - club1.getPoints();
+            }
+            return club2.getGoalDifference() - club1.getGoalDifference();
+        });
+
+        for (int i = 0; i < table.size(); i++) {
+            if (table.get(i).equals(userClub)) {
+                return i + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    public void nextMatchday() {
+        if (currentMatchday < matchdays.size() - 1) {
+            currentMatchday++;
+        } else {
+            System.out.println("Die Saison ist beendet.");
+        }
+    }
 }
