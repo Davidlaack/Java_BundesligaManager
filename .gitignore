@@ -1,1 +1,15 @@
-/bin/
+# Compiled class files
+*.class
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+target/
+
+# Mac
+.DS_Store
+
+# Andere temporäre Dateien
+*.log
