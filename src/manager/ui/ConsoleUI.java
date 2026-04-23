@@ -130,14 +130,14 @@ public class ConsoleUI {
     
     public void showSeasonEnd(Season season, Club userClub) {
         System.out.println("\n" + "=".repeat(50));
-        System.out.println("🎉 SAISON 2025/26 BEENDET! 🎉");
+        System.out.println("SAISON 2025/26 BEENDET!");
         System.out.println("=".repeat(50));
 
         ArrayList<Club> finalTable = season.getFinalTable();
 
         // Meister
         Club champion = finalTable.get(0);
-        System.out.println("🏆 DEUTSCHER MEISTER: " + champion.getName() + " 🏆");
+        System.out.println("DEUTSCHER MEISTER: " + champion.getName());
         System.out.println();
 
         // Komplette Tabelle
