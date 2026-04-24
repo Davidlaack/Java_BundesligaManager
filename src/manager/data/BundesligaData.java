@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import manager.model.Club;
 import manager.model.Player;
 
-public class BundesligaData {
+// Klasse dient der manuellen Erstellung der 18 Bundesliga-Clubs und Hinzufügen der Spieler samt ihrer Eigenschaften
 
+public class BundesligaData {
+	// Hier wird jeder Club samt desser Spieler initialisiert und dem Programm als ArrayList "clubs" zur Verfügung gestellt
 	public static ArrayList<Club> createBundesligaClubs() {
 		ArrayList<Club> clubs = new ArrayList<>();
 
@@ -30,7 +32,9 @@ public class BundesligaData {
 
 		return clubs;
 	}
-
+	
+	// Ab hier wird zu jedem Club ein Objekt erstellt, welche jeweils eine gewisse Anzahl Spieler-Objekte enthalten
+	
 	private static Club createBayern() {
 		Club club = new Club("FC Bayern München");
 

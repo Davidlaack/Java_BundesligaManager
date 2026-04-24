@@ -12,6 +12,10 @@ import manager.ui.ConsoleUI;
 import java.util.ArrayList;
 import java.util.List;
 
+// Diese Klasse steuert den Ablauf des Managerspiels. 
+// Sie verbindet Benutzeroberfläche, Saison und ausgewählten Verein und koordiniert die wichtigsten Spielaktionen.“
+
+
 public class Game {
 
     private final ConsoleUI ui = new ConsoleUI();
@@ -30,6 +34,7 @@ public class Game {
         mainMenu();
     }
 
+    // Der vom Nutzer ausgewählte Club wird hier in der Variablen userClub gespeichert
     private void chooseClub() {
         List<Club> clubs = season.getClubs();
         ui.displayClubSelection(clubs);
@@ -40,6 +45,7 @@ public class Game {
         ui.printMessage("\nDu bist jetzt Manager von " + userClub.getName() + "!");
     }
 
+    // Das wiederkehrende Hauptmenü mit Auswählmöglichkeiten im UI samt Aufruf der jeweils ausgewählten Funktionen
     private void mainMenu() {
         while (running) {
             ui.showMainMenu(userClub.getName());
@@ -81,16 +87,19 @@ public class Game {
         }
     }
 
+    // Zeigt die nächste Partie des Clubs des Nutzers
     private void showNextMatch() {
         Match match = season.getNextMatchForClub(userClub);
         ui.showNextMatch(match);
     }
-
+    
+    // Zeigt den aktuelle Tabellenplatz des Clubs des Nutzers an 
     private void showUserClubPosition() {
         int position = season.getTablePosition(userClub);
         ui.showUserClubPosition(userClub.getName(), position);
     }
-
+    
+    // Alle Partien (9) des aktuellen Spieltags anzeigen, sofern die Saison noch nicht zuende ist
     private void showCurrentMatchday() {
         if (season.getCurrentMatchdayObject() != null) {
             season.getCurrentMatchdayObject().showMatches();
@@ -98,12 +107,14 @@ public class Game {
             ui.printMessage("Es gibt aktuell keinen Spieltag.");
         }
     }
-
+    
+    // Funktion, um eine Aufstellung zu speichern. 
+    // Zunächst Auswahl aus verfügbaren Formationen. 
     private void createLineup() {
         int formationChoice = ui.chooseFormation();
 
         String formation;
-        switch (formationChoice) {                  // ← normales Switch-Statement (kein Expression)
+        switch (formationChoice) {   
             case 1:
                 formation = "3-4-3";
                 break;
@@ -121,9 +132,10 @@ public class Game {
                 break;
             default:
                 ui.printMessage("Ungültige Formation.");
-                return;                             // ← jetzt erlaubt
+                return;                           
         }
-
+        // Erzeugen eines Lineup-Objekts. Contructor der Klasse Lineup wird dem gewählten Club und der gewählten Formation des Nutzers aufgerufen
+        // getRequiredDefenders() in class Lineup ermittelt Anzahl der benötigten Spieler pro Position
         Lineup lineup = new Lineup(userClub, formation);
 
         selectPlayersForPosition(lineup, "GK", 1);
@@ -135,13 +147,16 @@ public class Game {
         ui.printMessage("\nStartelf wurde gespeichert.");
     }
 
-
+    // Auswahl der Spieler mit passender Anzahl an Spielern pro Position, je nach gewählter Formation
+    // Ein Lineup-Objekt wird erstellt, das eine ArrayList enthält welche 11 Player-Objekte enthalten
     private void selectPlayersForPosition(Lineup lineup, String position, int needed) {
         int selectedCount = 0;
 
         while (selectedCount < needed) {
+        	// In temporärer ArrayList availablePlayers werden alle Spieler, die zur aktuell benötigten Position gehören, gespeichert
             ArrayList<Player> availablePlayers = new ArrayList<>();
-
+            
+            // Und im UI ausgegeben, damit Nutzer seine Spieler wählen kann
             System.out.println("\nVerfügbare Spieler für Position " + position + ":");
 
             int number = 1;
@@ -166,38 +181,52 @@ public class Game {
             selectedCount++;
         }
     }
-
+    
+    // Ausgabe der aktuell gespeicherten Aufstellung im UI
     private void showCurrentLineup() {
         ui.showCurrentLineup(userClub.getCurrentLineup());
     }
-
+    
+    // Aufruf der Funktion, um den nächsten Spieltag zu simulieren
     private void playNextMatchday() {
+    	//Abbruch und return, falls keine Aufstellung vorhanden ist
         if (userClub.getCurrentLineup() == null) {
             ui.printMessage("Du musst zuerst eine Startelf festlegen.");
             return;
         }
-
+        
+        // Das aktuelle Matchday-Objekt aus der Saison holen
+        // Enthält alle Spiele des aktuellen Spieltags
         Matchday currentMatchdayObj = season.getCurrentMatchdayObject();
         if (currentMatchdayObj == null) {
+        	// Falls keine Spieltage mehr vorhanden sind, Saisonende melden
             ui.showNoMoreMatchdays();
             return;
         }
-
+        
+     // Überschrift im UI für den aktuellen Spieltag anzeigen
         ui.showMatchdayHeader(currentMatchdayObj.getNumber());
-
+        
+     // Alle Spiele des aktuellen Spieltags nacheinander in den Simulator schicken
         for (Match match : currentMatchdayObj.getMatches()) {
+        	// Spiel berechnen und Ergebnis im Match-Objekt speichern
             MatchSimulator.simulateMatch(match);
+            
+         // Jedes Ergebnis im UI ausgeben
             ui.showMatchResult(match);
         }
-
+        
+        // Nach dem kompletten Spieltag den Saisonzähler erhöhen
         season.nextMatchday();
-
+        
+        // Prüfen, ob nach diesem Spieltag die Saison beendet ist.
         if (season.isSeasonFinished()) {
             ui.showSeasonEnd(season, userClub);
             running = false;
         }
     }
 
+    //Funktion, um den vom User ausgewählen Club zu holen
     public Club getUserClub() {
         return userClub;
     }
